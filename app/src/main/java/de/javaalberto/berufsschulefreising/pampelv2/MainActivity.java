@@ -39,6 +39,7 @@ import java.security.cert.X509Certificate;
 public class MainActivity extends AppCompatActivity {
 
     TextView tvRueckgabe;
+    String SpeedValue;
 
     private static void disableSSLCertificateChecking() {
         TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
@@ -85,9 +86,10 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         try {
-                            double s_latitude = 30.192327;
-                            double s_longitude = -81.727523;
-                            //https://pde.api.here.com/1/tile.json?layer=SPEED_LIMITS_FC" . (string)$functionClass . "&tilex=" . $tileX . "&tiley=" . $tileY . "&level=9&app_id={YOUR_APP_ID}&app_code={YOUR_APP_CODE}");
+                            //double s_latitude = 30.192327;
+                            //double s_longitude = -81.727523;
+                            double s_latitude = 48.406902;
+                            double s_longitude = 11.731034;
                             String tileUrl = String.format(
                                     Locale.ROOT,
                                     "https://reverse.geocoder.api.here.com/6.2/reversegeocode.json?prox=%f,%f,50&mode=retrieveAddresses&locationAttributes=linkInfo&gen=9&app_id=%s&app_code=%s",
@@ -140,21 +142,22 @@ public class MainActivity extends AppCompatActivity {
 
                             String speedUrl = String.format(
                                     Locale.ROOT,
-                                    "https://pde.api.here.com/1/tile.json?layer=SPEED_LIMITS_FC%d&tilex=%d&tiley=%d&level=9&app_id=%s&app_code=%s",
+                                    "https://pde.api.here.com/1/tile.json?layer=SPEED_LIMITS_FC%d&tilex=%d&tiley=%d&level=%d&app_id=%s&app_code=%s",
                                     functionClass,
                                     tileX,
                                     tileY,
-                                    s_appID, // don't forget about the constants :P
+                                    level,
+                                    s_appID,
                                     s_appCode
                             );
 
                             HttpURLConnection connSpeed = (HttpURLConnection) new URL(speedUrl).openConnection();
-                            final long timeStart = System.currentTimeMillis();
+                            //final long timeStart = System.currentTimeMillis();
                             BufferedReader readerSpeed = new BufferedReader(new InputStreamReader(connSpeed.getInputStream()));
                             sb = new StringBuilder();
 
                             while((line = readerSpeed.readLine()) != null) { sb.append(line); }
-                            final long timeEnd = System.currentTimeMillis();
+                            //final long timeEnd = System.currentTimeMillis();
 
                             String jsonTextSpeed = sb.toString();
 
@@ -164,12 +167,36 @@ public class MainActivity extends AppCompatActivity {
                             JSONObject jsonObjectSpeed = new JSONObject(jsonTextSpeed);
 
                             final Integer pdeLength = jsonObjectSpeed.getJSONArray("Rows").length();
+
+                            for(int i=1; i<pdeLength; i++){
+                                if (jsonObjectSpeed.getJSONArray("Rows").getJSONObject(i).getString("LINK_ID").equals(referenceId)){
+
+                                    String Value1 = jsonObjectSpeed.getJSONArray("Rows").getJSONObject(i).getString("FROM_REF_SPEED_LIMIT");
+                                    String Value2 = jsonObjectSpeed.getJSONArray("Rows").getJSONObject(i).getString("TO_REF_SPEED_LIMIT");
+
+                                    if (Value1 != null) {
+                                        if (Integer.parseInt(Value1) > 0) {
+                                            SpeedValue = jsonObjectSpeed.getJSONArray("Rows").getJSONObject(i).getString("FROM_REF_SPEED_LIMIT");
+                                            break;
+                                        }
+                                    } else if (Value2 != null) {
+                                        if (Integer.parseInt(Value2) > 0) {
+                                            SpeedValue = jsonObjectSpeed.getJSONArray("Rows").getJSONObject(i).getString("TO_REF_SPEED_LIMIT");
+                                            break;
+                                        }
+                                    }
+
+                                }else {
+                                    SpeedValue = "kein Wert";
+                                };
+
+                            }
                             //System.out.println("pdeLength: " + pdeLength.toString());
 
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    tvRueckgabe.setText("" + TimeUnit.MILLISECONDS.toMinutes(timeEnd - timeStart));
+                                    tvRueckgabe.setText(SpeedValue + "km/h");
                                 }
                             });
 
