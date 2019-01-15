@@ -21,7 +21,7 @@ import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.HttpsURLConnection;
-//hier steht ein haufen scheiß doppelt
+//hier steht ein haufen scheiß doppelt 123
 import static de.javaalberto.berufsschulefreising.pampelv2.Constants.s_appCode;
 import static de.javaalberto.berufsschulefreising.pampelv2.Constants.s_appID;
 import static java.lang.Math.pow;
