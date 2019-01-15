@@ -223,7 +223,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         Button btnAbfrageServer = (Button)findViewById(R.id.btnAbfrageServer);
-
+        // yo was geht
         btnAbfrageServer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
