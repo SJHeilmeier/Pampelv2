@@ -1,35 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/linearLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorPrimaryDark"
     tools:context=".MainActivity">
 
     <TextView
-        android:id="@+id/latitude"
-        android:layout_width="90dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="0"
-        android:text="TextView" />
-
-    <TextView
-        android:id="@+id/longitude"
-        android:layout_width="90dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="0"
-        android:text="TextView" />
-
-    <Button
-        android:id="@+id/btnAbfrageServer"
-        android:layout_width="115dp"
-        android:layout_height="87dp"
-        android:text="Abfrage" />
-
-    <TextView
         android:id="@+id/tvRueckgabe"
-        android:layout_width="340dp"
-        android:layout_height="24dp"
-        android:text="test" />
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="6dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="6dp"
+        android:textColor="@color/colorAccent"
+        android:textSize="30sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ivSmiley" />
 
-</LinearLayout>
+    <ImageView
+        android:id="@+id/ivSmiley"
+        android:layout_width="362dp"
+        android:layout_height="351dp"
+        android:layout_marginStart="6dp"
+        android:layout_marginTop="18dp"
+        android:layout_marginEnd="6dp"
+        android:contentDescription="@string/emoji"
+        android:paddingLeft="0dp"
+        android:paddingRight="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.585"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/smileyhappy" />
+
+</android.support.constraint.ConstraintLayout>

@@ -34,12 +34,13 @@ class GpsTracker extends Service implements LocationListener {
     Location location; // location
     double latitude; // latitude
     double longitude; // longitude
+    double speed; // speed
 
     // The minimum distance to change Updates in meters
-    private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10; // 10 meters
+    private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 1; // 1 meter
 
     // The minimum time between updates in milliseconds
-    private static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 1; // 1 minute
+    private static final long MIN_TIME_BW_UPDATES = 1000  * 1; // 1 sek
 
     // Declaring a Location Manager
     protected LocationManager locationManager;
@@ -83,6 +84,7 @@ class GpsTracker extends Service implements LocationListener {
                         if (location != null) {
                             latitude = location.getLatitude();
                             longitude = location.getLongitude();
+                            speed = location.getSpeed();
                         }
                     }
                 }
@@ -107,6 +109,7 @@ class GpsTracker extends Service implements LocationListener {
                             if (location != null) {
                                 latitude = location.getLatitude();
                                 longitude = location.getLongitude();
+                                speed = location.getSpeed();
                             }
                         }
                     }
@@ -156,6 +159,20 @@ class GpsTracker extends Service implements LocationListener {
         // return longitude
         return longitude;
     }
+
+    /**
+     * Function to get longitude
+     * */
+
+    public double getSpeed(){
+        if(location != null){
+            longitude = location.getSpeed();
+        }
+
+        // return longitude
+        return longitude;
+    }
+
 
     /**
      * Function to check GPS/wifi enabled
