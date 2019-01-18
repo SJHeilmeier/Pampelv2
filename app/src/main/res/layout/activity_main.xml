@@ -12,14 +12,19 @@
         android:id="@+id/tvRueckgabe"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="6dp"
-        android:layout_marginTop="30dp"
-        android:layout_marginEnd="6dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:gravity="center|center_horizontal|center_vertical"
         android:textColor="@color/colorAccent"
         android:textSize="30sp"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/tvLimit"
+        app:layout_constraintHorizontal_bias="0.493"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ivSmiley" />
+        app:layout_constraintTop_toBottomOf="@+id/ivSmiley"
+        app:layout_constraintVertical_bias="0.213" />
 
     <ImageView
         android:id="@+id/ivSmiley"
@@ -36,5 +41,26 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/smileyhappy" />
+
+    <TextView
+        android:id="@+id/tvLimit"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="6dp"
+        android:autoSizeTextType="none"
+        android:gravity="center_horizontal|center_vertical"
+        android:textAlignment="center"
+        android:textColorLink="@android:color/black"
+        android:textIsSelectable="false"
+        android:textSize="60sp"
+        android:textStyle="bold"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ivSmiley"
+        app:layout_constraintVertical_bias="0.0"
+        tools:textColor="@android:color/black" />
 
 </android.support.constraint.ConstraintLayout>
