@@ -55,14 +55,21 @@ public class Utils extends Thread{
             try {
                 counter++;
                 setCurrLocation();
-                if ( lastLocation != null) {
-                    currSpeed = Math.sqrt(
-                            Math.pow(currLocation.getLongitude() - lastLocation.getLongitude(), 2)
-                                    + Math.pow(currLocation.getLatitude() - lastLocation.getLatitude(), 2)
-                    ) / (currLocation.getTime() - lastLocation.getTime());
-                }
+               /* if ( lastLocation != null) {
+                    final double lc_long = currLocation.getLongitude();
+                    final double lc_lat = currLocation.getLatitude();
+                    final double ll_long = lastLocation.getLongitude();
+                    final double ll_lat = lastLocation.getLatitude();
+                    final double wert1 = lc_long - ll_long;
+                    final double wert2 = lc_lat - ll_lat;
+                    final double pwert1 = Math.pow(wert1, 2);
+                    final double pwert2 = Math.pow(wert2, 2);
+                    final double wert3 = (currLocation.getTime() - lastLocation.getTime()) / 1_000;
+                    final double ergebnis = Math.sqrt((pwert1 + pwert2)/wert3);
+                    currSpeed = ergebnis;
+                }*/
 
-                lastLocation = currLocation;
+                //lastLocation = currLocation;
                 mActivity.runOnUiThread(() -> m_speed.setValue((int) Math.floor(currSpeed * 3.6)));
 
                 if (counter == 5) {
@@ -192,10 +199,10 @@ public class Utils extends Thread{
 
     public void setCurrLocation() {
         currLocation = gpsTracker.getLocation();
-       if (gpsTracker.canGetLocation()) {
-
-           currLatitude = currLocation.getLatitude();
-           currLongitude = currLocation.getLongitude();
+        if (gpsTracker.canGetLocation()) {
+            currSpeed = currLocation.getSpeed();
+            currLatitude = currLocation.getLatitude();
+            currLongitude = currLocation.getLongitude();
         } else {
             gpsTracker.showSettingsAlert();
         }

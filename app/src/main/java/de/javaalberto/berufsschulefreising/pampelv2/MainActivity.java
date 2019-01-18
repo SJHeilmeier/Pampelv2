@@ -23,8 +23,9 @@ import android.support.v4.content.ContextCompat;
 
 public class MainActivity extends AppCompatActivity {
 
-    private TextView tvLatitude,tvLongitude,tvRueckgabe,tvSpeed;
+    private TextView tvRueckgabe,tvLimit;
     Integer i;
+    ImageView ivSmiley;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +34,8 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
         tvRueckgabe = findViewById(R.id.tvRueckgabe);
-        final ImageView ivSmiley = findViewById(R.id.ivSmiley);
+        tvLimit = findViewById(R.id.tvLimit);
+        ImageView ivSmiley = findViewById(R.id.ivSmiley);
         disableSSLCertificateChecking();
         i = 0;
 
@@ -49,7 +51,8 @@ public class MainActivity extends AppCompatActivity {
             runOnUiThread(() -> {
 
                         int i_Limit = neueUtils.getCurrLimit();
-                        tvRueckgabe.setText(String.format("%d km/h | %d km/h | %d", value, i_Limit, i++));
+                        tvRueckgabe.setText(String.format("%d km/h | %d", value, i++));
+                        setLimitIcon(i_Limit);
 
                         if (isToFast(value, i_Limit)) {
                             ivSmiley.setImageResource(R.drawable.smileybad);
@@ -60,31 +63,6 @@ public class MainActivity extends AppCompatActivity {
             );
         });
     }
-
-    public void setKMH(double kmh) {
-        tvSpeed.setText(String.format("%d km/h", kmh));
-    }
-        /*btnAbfrageServer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        i++;
-
-                        tvLatitude.setText(String.valueOf(neueUtils.getCurrLatitude()));
-                        tvLongitude.setText(String.valueOf(neueUtils.getCurrLongitude()));
-                        tvRueckgabe.setText(String.format("%d km/h %d",neueUtils.getCurrLimit(),i));
-
-                        if (neueUtils.isToFast()) {
-                            ivSmiley.setImageResource(R.drawable.smileybad);
-                        }else {
-                            ivSmiley.setImageResource(R.drawable.smileyhappy);
-                        }
-                    }
-                });
-            }
-        });*/
 
     public boolean isToFast(int i_Speed, int i_Limit) {
         if (i_Speed >= 100) {
@@ -131,6 +109,21 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void setLimitIcon(int i_Limit) {
+        if (i_Limit > 0) {
+            tvLimit.setVisibility(View.VISIBLE);
+            if (i_Limit > 200) {
+                tvLimit.setText("");
+                tvLimit.setBackgroundResource(R.drawable.nospeedsign);
+            } else {
+                tvLimit.setBackgroundResource(R.drawable.emptysign);
+                tvLimit.setText(String.format("%d", i_Limit));
+            }
+        } else {
+            tvLimit.setVisibility(View.INVISIBLE);
         }
     }
 }

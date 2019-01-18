@@ -32,15 +32,15 @@ class GpsTracker extends Service implements LocationListener {
     boolean canGetLocation = false;
 
     Location location; // location
+    double speed;
     double latitude; // latitude
     double longitude; // longitude
-    double speed; // speed
 
     // The minimum distance to change Updates in meters
-    private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 1; // 1 meter
+    private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 1; // 1 Meter
 
     // The minimum time between updates in milliseconds
-    private static final long MIN_TIME_BW_UPDATES = 1000  * 1; // 1 sek
+    private static final long MIN_TIME_BW_UPDATES = 1000 ; // 1 sek
 
     // Declaring a Location Manager
     protected LocationManager locationManager;
@@ -82,16 +82,16 @@ class GpsTracker extends Service implements LocationListener {
                                 .getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
 
                         if (location != null) {
+                            speed = location.getSpeed();
                             latitude = location.getLatitude();
                             longitude = location.getLongitude();
-                            speed = location.getSpeed();
                         }
                     }
                 }
 
                 // if GPS Enabled get lat/long using GPS Services
                 if (isGPSEnabled) {
-                    if (location == null) {
+                    //if (location == null) {
                         //check the network permission
                         if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                             ActivityCompat.requestPermissions((Activity) mContext, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 101);
@@ -107,12 +107,12 @@ class GpsTracker extends Service implements LocationListener {
                                     .getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
                             if (location != null) {
+                                speed = location.getSpeed();
                                 latitude = location.getLatitude();
                                 longitude = location.getLongitude();
-                                speed = location.getSpeed();
                             }
                         }
-                    }
+                    //}
                 }
             }
 
@@ -159,20 +159,6 @@ class GpsTracker extends Service implements LocationListener {
         // return longitude
         return longitude;
     }
-
-    /**
-     * Function to get longitude
-     * */
-
-    public double getSpeed(){
-        if(location != null){
-            longitude = location.getSpeed();
-        }
-
-        // return longitude
-        return longitude;
-    }
-
 
     /**
      * Function to check GPS/wifi enabled
