@@ -2,4 +2,14 @@
     <string name="app_name">Pampelv2</string>
     <string name="emoji">An emoji</string>
     <string name="limit">a Sign that shows the Limit</string>
+    <string name="login">Login</string>
+    <string name="login_name" >name</string>
+    <string name="password_text">password</string>
+    <string name="regist">Sign up</string>
+    <string name="registTitle">Registration</string>
+    <string name="passConf">confirm passwort</string>
+    <string name="login_success">Success</string>
+    <string name="login_fail">Login failed</string>
+    <string name="registFailed">Registration failed</string>
+    <string name="regist_success">Registration successfull</string>
 </resources>
