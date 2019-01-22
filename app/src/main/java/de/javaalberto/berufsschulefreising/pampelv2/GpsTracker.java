@@ -32,7 +32,7 @@ class GpsTracker extends Service implements LocationListener {
     boolean canGetLocation = false;
 
     Location location; // location
-    double speed;
+    double speed;       //Speed
     double latitude; // latitude
     double longitude; // longitude
 
@@ -86,6 +86,9 @@ class GpsTracker extends Service implements LocationListener {
                             latitude = location.getLatitude();
                             longitude = location.getLongitude();
                         }
+                        /*if (location.hasSpeed()) {
+                            speed = location.getSpeed();
+                        }*/
                     }
                 }
 
@@ -107,10 +110,12 @@ class GpsTracker extends Service implements LocationListener {
                                     .getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
                             if (location != null) {
-                                speed = location.getSpeed();
                                 latitude = location.getLatitude();
                                 longitude = location.getLongitude();
                             }
+                            /*if (location.hasSpeed()) {
+                                speed = location.getSpeed();
+                            }*/
                         }
                     //}
                 }
@@ -174,8 +179,8 @@ class GpsTracker extends Service implements LocationListener {
      * On pressing Settings button will lauch Settings Options
      * */
 
-    public void showSettingsAlert(){
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(mContext);
+    public void showSettingsAlert(Activity mActivity){
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(mActivity);
 
         // Setting Dialog Title
         alertDialog.setTitle("GPS is settings");

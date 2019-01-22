@@ -5,26 +5,24 @@
     android:id="@+id/linearLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:keepScreenOn="true"
     android:background="@color/colorPrimaryDark"
     tools:context=".MainActivity">
 
     <TextView
         android:id="@+id/tvRueckgabe"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_marginStart="28dp"
+        android:layout_marginTop="6dp"
+        android:layout_marginBottom="6dp"
         android:gravity="center|center_horizontal|center_vertical"
         android:textColor="@color/colorAccent"
         android:textSize="30sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/tvLimit"
-        app:layout_constraintHorizontal_bias="0.493"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ivSmiley"
-        app:layout_constraintVertical_bias="0.213" />
+        app:layout_constraintVertical_bias="0.07" />
 
     <ImageView
         android:id="@+id/ivSmiley"
@@ -47,7 +45,7 @@
         android:layout_width="150dp"
         android:layout_height="150dp"
         android:layout_marginTop="20dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginEnd="20dp"
         android:layout_marginBottom="6dp"
         android:autoSizeTextType="none"
         android:gravity="center_horizontal|center_vertical"
@@ -62,5 +60,24 @@
         app:layout_constraintTop_toBottomOf="@+id/ivSmiley"
         app:layout_constraintVertical_bias="0.0"
         tools:textColor="@android:color/black" />
+
+    <TextView
+        android:id="@+id/tvNote"
+        android:layout_width="0dp"
+        android:layout_height="153dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/pampelnote"
+        android:gravity="center"
+        android:textAlignment="center"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.606"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ivSmiley"
+        app:layout_constraintVertical_bias="0.056" />
 
 </android.support.constraint.ConstraintLayout>

@@ -24,8 +24,7 @@ import android.support.v4.content.ContextCompat;
 public class MainActivity extends AppCompatActivity {
 
     private TextView tvRueckgabe,tvLimit;
-    Integer i;
-    ImageView ivSmiley;
+    private ImageView ivSmiley;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,9 +34,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         tvRueckgabe = findViewById(R.id.tvRueckgabe);
         tvLimit = findViewById(R.id.tvLimit);
-        ImageView ivSmiley = findViewById(R.id.ivSmiley);
+        ivSmiley = findViewById(R.id.ivSmiley);
         disableSSLCertificateChecking();
-        i = 0;
 
         try {
             if (ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -49,35 +47,33 @@ public class MainActivity extends AppCompatActivity {
         neueUtils.start();
         neueUtils.getSpeed().observe(this, (value) -> {
             runOnUiThread(() -> {
-
-                        int i_Limit = neueUtils.getCurrLimit();
-                        tvRueckgabe.setText(String.format("%d km/h | %d", value, i++));
-                        setLimitIcon(i_Limit);
-
-                        if (isToFast(value, i_Limit)) {
-                            ivSmiley.setImageResource(R.drawable.smileybad);
-                        } else {
-                            ivSmiley.setImageResource(R.drawable.smileyhappy);
-                        }
+                        int l_Limit = neueUtils.getCurrLimit();
+                        tvRueckgabe.setText(String.format("%d km/h", value));
+                        setLimitIcon(l_Limit);
+                        setSpeedIcon(value,l_Limit);
                     }
             );
         });
     }
 
-    public boolean isToFast(int i_Speed, int i_Limit) {
+    //Rueckgabewerte
+    // 0 = Genau richtig
+    // 10 = zuSchnell
+    // 100 = viel zuSchnell
+    public int isToFast(int i_Speed, int i_Limit) {
         if (i_Speed >= 100) {
-            if ((53 - Math.ceil((double)i_Speed * 0.03) )> i_Limit) {
-                return true;
+            if ((i_Speed - Math.ceil((double)i_Speed * 0.03) )> i_Limit) {
+                return 100;
             } else{
-                return false;
+                return 0;
             }
-        } else if (i_Limit == 0){
-            return false;
+        } else if ( (i_Limit == 0) || (i_Limit == 999) ){
+            return 0;
         } else {
             if ((i_Speed - 3) > i_Limit) {
-                return true;
-            } else{
-                return false;
+                return 100;
+            } else {
+                return 0;
             }
         }
     }
@@ -124,6 +120,25 @@ public class MainActivity extends AppCompatActivity {
             }
         } else {
             tvLimit.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    public void setSpeedIcon(int i_Speed,int i_Limit) {
+        if ((i_Speed != 69) && (i_Speed != 0) ){
+            int l_istToFast = isToFast(i_Speed, i_Limit);
+            if (l_istToFast == 100) {
+                ivSmiley.setImageResource(R.drawable.smileybad);
+            } else if (l_istToFast == 10) {
+                ivSmiley.setImageResource(R.drawable.smileysad);
+            } else if (l_istToFast == 0) {
+                ivSmiley.setImageResource(R.drawable.smileyhappy);
+            }
+        } else if (i_Speed == 0) {
+            ivSmiley.setImageResource(R.drawable.smileysleepy);
+        } else if (i_Speed == 69) {
+            ivSmiley.setImageResource(R.drawable.smileywink);
+        } else {
+            ivSmiley.setImageResource(R.drawable.smileyok);
         }
     }
 }

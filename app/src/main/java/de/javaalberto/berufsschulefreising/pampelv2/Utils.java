@@ -2,7 +2,6 @@ package de.javaalberto.berufsschulefreising.pampelv2;
 
 import android.app.Activity;
 import android.arch.lifecycle.MutableLiveData;
-import android.content.Context;
 import android.location.Location;
 
 import org.json.JSONException;
@@ -24,10 +23,7 @@ public class Utils extends Thread{
     private Activity mActivity;
     private double currSpeed;
     private int currLimit;
-    private Location lastLocation;
     private Location currLocation;
-    private double currLatitude;
-    private double currLongitude;
     private GpsTracker gpsTracker;
 
     public MutableLiveData<Integer> getSpeed() {
@@ -39,12 +35,11 @@ public class Utils extends Thread{
     public Utils(Activity activity) {
         this.mActivity = activity;
         gpsTracker = new GpsTracker(mActivity.getApplicationContext());
+        enableGps();
         m_speed = new MutableLiveData<>();
         m_speed.setValue(0);
         currSpeed = 0.0;
         currLimit = 0;
-        currLatitude = 0.0;
-        currLongitude =  0.0;
     }
 
     @Override
@@ -53,128 +48,113 @@ public class Utils extends Thread{
         super.run();
         while (true) {
             try {
-                counter++;
-                setCurrLocation();
-               /* if ( lastLocation != null) {
-                    final double lc_long = currLocation.getLongitude();
-                    final double lc_lat = currLocation.getLatitude();
-                    final double ll_long = lastLocation.getLongitude();
-                    final double ll_lat = lastLocation.getLatitude();
-                    final double wert1 = lc_long - ll_long;
-                    final double wert2 = lc_lat - ll_lat;
-                    final double pwert1 = Math.pow(wert1, 2);
-                    final double pwert2 = Math.pow(wert2, 2);
-                    final double wert3 = (currLocation.getTime() - lastLocation.getTime()) / 1_000;
-                    final double ergebnis = Math.sqrt((pwert1 + pwert2)/wert3);
-                    currSpeed = ergebnis;
-                }*/
+                if (setCurrLocation()) {
+                    counter++;
 
-                //lastLocation = currLocation;
-                mActivity.runOnUiThread(() -> m_speed.setValue((int) Math.floor(currSpeed * 3.6)));
+                    mActivity.runOnUiThread(() -> m_speed.setValue((int) Math.floor(currSpeed * 3.6)));
 
-                if (counter == 5) {
-                    String tileUrl = String.format(
-                            Locale.ROOT,
-                            "https://reverse.geocoder.api.here.com/6.2/reversegeocode.json?prox=%f,%f,50&mode=retrieveAddresses&locationAttributes=linkInfo&gen=9&app_id=%s&app_code=%s",
-                            currLatitude,
-                            currLongitude,
-                            s_appID,
-                            s_appCode
-                    );
+                    if (counter == 5) {
+                        String tileUrl = String.format(
+                                Locale.ROOT,
+                                "https://reverse.geocoder.api.here.com/6.2/reversegeocode.json?prox=%f,%f,50&mode=retrieveAddresses&locationAttributes=linkInfo&gen=9&app_id=%s&app_code=%s",
+                                currLocation.getLatitude(),
+                                currLocation.getLongitude(),
+                                s_appID,
+                                s_appCode
+                        );
 
-                    HttpURLConnection connTile = (HttpURLConnection) new URL(tileUrl).openConnection();
-                    BufferedReader readerTile = new BufferedReader(new InputStreamReader(connTile.getInputStream()));
+                        HttpURLConnection connTile = (HttpURLConnection) new URL(tileUrl).openConnection();
+                        BufferedReader readerTile = new BufferedReader(new InputStreamReader(connTile.getInputStream()));
 
-                    StringBuilder sb = new StringBuilder();
-                    String line;
+                        StringBuilder sb = new StringBuilder();
+                        String line;
 
-                    while ((line = readerTile.readLine()) != null) {
-                        sb.append(line);
-                    }
+                        while ((line = readerTile.readLine()) != null) {
+                            sb.append(line);
+                        }
 
-                    readerTile.close();
-                    connTile.disconnect();
+                        readerTile.close();
+                        connTile.disconnect();
 
-                    JSONObject jsonObject = new JSONObject(sb.toString());
+                        JSONObject jsonObject = new JSONObject(sb.toString());
 
-                    final String referenceId = jsonObject
-                            .getJSONObject("Response")
-                            .getJSONArray("View")
-                            .getJSONObject(0)
-                            .getJSONArray("Result")
-                            .getJSONObject(0)
-                            .getJSONObject("Location")
-                            .getJSONObject("MapReference")
-                            .getString("ReferenceId");
+                        final String referenceId = jsonObject
+                                .getJSONObject("Response")
+                                .getJSONArray("View")
+                                .getJSONObject(0)
+                                .getJSONArray("Result")
+                                .getJSONObject(0)
+                                .getJSONObject("Location")
+                                .getJSONObject("MapReference")
+                                .getString("ReferenceId");
 
-                    final Integer functionClass = jsonObject
-                            .getJSONObject("Response")
-                            .getJSONArray("View")
-                            .getJSONObject(0)
-                            .getJSONArray("Result")
-                            .getJSONObject(0)
-                            .getJSONObject("Location")
-                            .getJSONObject("LinkInfo")
-                            .getInt("FunctionalClass");
+                        final Integer functionClass = jsonObject
+                                .getJSONObject("Response")
+                                .getJSONArray("View")
+                                .getJSONObject(0)
+                                .getJSONArray("Result")
+                                .getJSONObject(0)
+                                .getJSONObject("Location")
+                                .getJSONObject("LinkInfo")
+                                .getInt("FunctionalClass");
 
-                    final Integer level = 8 + functionClass;
-                    final double tileSize = 180 / pow(2, level);
-                    final Integer tileY = (int) ((currLatitude + 90) / tileSize);
-                    final Integer tileX = (int) ((currLongitude + 180) / tileSize);
+                        final Integer level = 8 + functionClass;
+                        final double tileSize = 180 / pow(2, level);
+                        final Integer tileY = (int) ((currLocation.getLatitude() + 90) / tileSize);
+                        final Integer tileX = (int) ((currLocation.getLongitude() + 180) / tileSize);
 
-                    String speedUrl = String.format(
-                            Locale.ROOT,
-                            "https://pde.api.here.com/1/tile.json?layer=SPEED_LIMITS_FC%d&tilex=%d&tiley=%d&level=%d&app_id=%s&app_code=%s",
-                            functionClass,
-                            tileX,
-                            tileY,
-                            level,
-                            s_appID,
-                            s_appCode
-                    );
+                        String speedUrl = String.format(
+                                Locale.ROOT,
+                                "https://pde.api.here.com/1/tile.json?layer=SPEED_LIMITS_FC%d&tilex=%d&tiley=%d&level=%d&app_id=%s&app_code=%s",
+                                functionClass,
+                                tileX,
+                                tileY,
+                                level,
+                                s_appID,
+                                s_appCode
+                        );
 
-                    HttpURLConnection connSpeed = (HttpURLConnection) new URL(speedUrl).openConnection();
-                    //final long timeStart = System.currentTimeMillis();
-                    BufferedReader readerSpeed = new BufferedReader(new InputStreamReader(connSpeed.getInputStream()));
-                    sb = new StringBuilder();
+                        HttpURLConnection connSpeed = (HttpURLConnection) new URL(speedUrl).openConnection();
+                        //final long timeStart = System.currentTimeMillis();
+                        BufferedReader readerSpeed = new BufferedReader(new InputStreamReader(connSpeed.getInputStream()));
+                        sb = new StringBuilder();
 
-                    while ((line = readerSpeed.readLine()) != null) {
-                        sb.append(line);
-                    }
-                    //final long timeEnd = System.currentTimeMillis();
+                        while ((line = readerSpeed.readLine()) != null) {
+                            sb.append(line);
+                        }
+                        //final long timeEnd = System.currentTimeMillis();
 
-                    String jsonTextSpeed = sb.toString();
+                        String jsonTextSpeed = sb.toString();
 
-                    readerSpeed.close();
-                    connSpeed.disconnect();
+                        readerSpeed.close();
+                        connSpeed.disconnect();
 
-                    JSONObject jsonObjectSpeed = new JSONObject(jsonTextSpeed);
+                        JSONObject jsonObjectSpeed = new JSONObject(jsonTextSpeed);
 
-                    final Integer pdeLength = jsonObjectSpeed.getJSONArray("Rows").length();
+                        final Integer pdeLength = jsonObjectSpeed.getJSONArray("Rows").length();
 
-                    for (int i = 1; i < pdeLength; i++) {
-                        if (jsonObjectSpeed.getJSONArray("Rows").getJSONObject(i).getString("LINK_ID").equals(referenceId)) {
+                        for (int i = 1; i < pdeLength; i++) {
+                            if (jsonObjectSpeed.getJSONArray("Rows").getJSONObject(i).getString("LINK_ID").equals(referenceId)){
+                                int test = 0;
+                                if (!(jsonObjectSpeed.getJSONArray("Rows").getJSONObject(i).getString("FROM_REF_SPEED_LIMIT").equals("equals")) &&
+                                        (Integer.parseInt(jsonObjectSpeed.getJSONArray("Rows").getJSONObject(i).getString("FROM_REF_SPEED_LIMIT")) > 0)) {
 
-                            String Value1 = jsonObjectSpeed.getJSONArray("Rows").getJSONObject(i).getString("FROM_REF_SPEED_LIMIT");
-                            String Value2 = jsonObjectSpeed.getJSONArray("Rows").getJSONObject(i).getString("TO_REF_SPEED_LIMIT");
-
-                            if (Value1 != null) {
-                                if (Integer.parseInt(Value1) > 0) {
                                     currLimit = Integer.parseInt(jsonObjectSpeed.getJSONArray("Rows").getJSONObject(i).getString("FROM_REF_SPEED_LIMIT"));
                                     break;
-                                }
-                            } else if (Value2 != null) {
-                                if (Integer.parseInt(Value2) > 0) {
+                                } else if (!(jsonObjectSpeed.getJSONArray("Rows").getJSONObject(i).getString("TO_REF_SPEED_LIMIT").equals("null")) &&
+                                        (Integer.parseInt(jsonObjectSpeed.getJSONArray("Rows").getJSONObject(i).getString("TO_REF_SPEED_LIMIT")) > 0)) {
+
                                     currLimit = Integer.parseInt(jsonObjectSpeed.getJSONArray("Rows").getJSONObject(i).getString("TO_REF_SPEED_LIMIT"));
                                     break;
                                 }
+                            } //else if (currLimit != 0) {
+                              //  break;
+                             else {
+                                currLimit = 0;
                             }
-                        } else {
-                            currLimit = 0;
                         }
-                        ;
+                        counter = 0;
                     }
-                    counter = 0;
                 }
             } catch (MalformedURLException e) {
                 e.printStackTrace();
@@ -197,14 +177,22 @@ public class Utils extends Thread{
         return currLimit;
     }
 
-    public void setCurrLocation() {
-        currLocation = gpsTracker.getLocation();
-        if (gpsTracker.canGetLocation()) {
-            currSpeed = currLocation.getSpeed();
-            currLatitude = currLocation.getLatitude();
-            currLongitude = currLocation.getLongitude();
+    public boolean setCurrLocation() {
+        if (gpsTracker.canGetLocation() && (gpsTracker.getLocation()!= null)) {
+            currLocation = gpsTracker.getLocation();
+            if (currLocation.hasSpeed()) {
+                currSpeed = currLocation.getSpeed();
+            }
+            return true;
         } else {
-            gpsTracker.showSettingsAlert();
+            //mActivity.runOnUiThread(() -> gpsTracker.showSettingsAlert(mActivity));
+            return false;
+        }
+    }
+
+    public void enableGps() {
+        if (!gpsTracker.canGetLocation()) {
+            mActivity.runOnUiThread(() -> gpsTracker.showSettingsAlert(mActivity));
         }
     }
 }
