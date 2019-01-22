@@ -136,7 +136,7 @@ public class Utils extends Thread{
                         for (int i = 1; i < pdeLength; i++) {
                             if (jsonObjectSpeed.getJSONArray("Rows").getJSONObject(i).getString("LINK_ID").equals(referenceId)){
                                 int test = 0;
-                                if (!(jsonObjectSpeed.getJSONArray("Rows").getJSONObject(i).getString("FROM_REF_SPEED_LIMIT").equals("equals")) &&
+                                if (!(jsonObjectSpeed.getJSONArray("Rows").getJSONObject(i).getString("FROM_REF_SPEED_LIMIT").equals("null")) &&
                                         (Integer.parseInt(jsonObjectSpeed.getJSONArray("Rows").getJSONObject(i).getString("FROM_REF_SPEED_LIMIT")) > 0)) {
 
                                     currLimit = Integer.parseInt(jsonObjectSpeed.getJSONArray("Rows").getJSONObject(i).getString("FROM_REF_SPEED_LIMIT"));
