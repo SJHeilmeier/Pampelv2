@@ -22,12 +22,12 @@ public class LoginUtils {
     private Integer secondScore;
     private Integer thirdScore;
 
-    public Integer handleScore(String username, Integer currSpeed, Integer currLimit) {
+    public Integer handleScore(Integer currSpeed, Integer currLimit) {
         try {
             String scoreUrl = String.format(
                     Locale.ROOT,
                     "https://pampelv2.dev-juicy-roots.com/api/users/score.php?username=%s&currSpeed=%d&currLimit=%d",
-                    username,
+                    name,
                     currSpeed,
                     currLimit
 
@@ -56,8 +56,8 @@ public class LoginUtils {
             final String loginStatus = jsonObjectScore
                     .getString("status");
 
-            name = jsonObjectScore
-                    .getString("username");
+            /*name = jsonObjectScore
+                    .getString("username");*/
 
             score = jsonObjectScore
                     .getInt("score");

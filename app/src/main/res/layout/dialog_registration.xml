@@ -4,16 +4,16 @@
     android:id="@+id/linearLayout2"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorPrimaryDark"
+    android:background="@android:color/white"
     android:orientation="vertical">
 
     <TextView
         android:id="@+id/tvLoginCaption"
-        android:layout_width="411dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorPrimary"
-        android:text="@string/registTitle"
-        android:textAlignment="textStart"
+        android:text="@string/regist_Title"
+        android:textAlignment="center"
         android:textColor="@color/colorAccent"
         android:textSize="30sp"
         android:textStyle="bold" />
@@ -28,8 +28,8 @@
         android:ems="10"
         android:hint="@string/login_name"
         android:inputType="textPersonName"
-        android:text="@string/login_name"
-        android:textColor="@color/colorAccent" />
+        android:textColor="@android:color/black"
+        android:textColorHint="@color/colorPrimary" />
 
     <EditText
         android:id="@+id/edtPass"
@@ -41,8 +41,8 @@
         android:ems="10"
         android:hint="@string/password_text"
         android:inputType="textPassword"
-        android:text="@string/password_text"
-        android:textColor="@color/colorAccent" />
+        android:textColor="@android:color/black"
+        android:textColorHint="@color/colorPrimary" />
 
     <EditText
         android:id="@+id/edtPassConf"
@@ -54,6 +54,7 @@
         android:ems="10"
         android:hint="@string/passConf"
         android:inputType="textPassword"
-        android:textColor="@color/colorAccent" />
+        android:textColor="@android:color/black"
+        android:textColorHint="@color/colorPrimary" />
 
 </LinearLayout>

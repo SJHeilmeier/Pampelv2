@@ -1,10 +1,9 @@
 package de.javaalberto.berufsschulefreising.pampelv2;
 
-import android.support.v7.app.AlertDialog;
+import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -24,35 +23,27 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements LoginAlert.LoginAlertListener, RegistrationAlert.RegAlertListener {
 
     private TextView tvRueckgabe,tvLimit,tvNote;
     private ImageView ivSmiley;
     private boolean isAuthenticated;
+    private LoginUtils newLoginUtils;
+    private Utils neueUtils;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-        /*final LoginUtils neueLoginUtils = new LoginUtils();
-
-        new Thread(() -> {
-            boolean resultLogin = neueLoginUtils.anmelden("rodi","12345");
-            boolean resultSignup = neueLoginUtils.registrieren("rodi","12345");
-            System.out.println("res: " + resultLogin + " name: " + neueLoginUtils.getName());
-            System.out.println("res: " + resultSignup + " name: " + neueLoginUtils.getName());
-        }).start();
-        */
-
-
-        isAuthenticated = true;
+        isAuthenticated = false;
 
         if (!isAuthenticated) {
-            showSignUp();
+            new LoginAlert().show(getSupportFragmentManager(),"Login Window");
         }
 
-        final Utils neueUtils = new Utils(this);
+        newLoginUtils = new LoginUtils();
+
         tvRueckgabe = findViewById(R.id.tvRueckgabe);
         tvLimit = findViewById(R.id.tvLimit);
         tvNote = findViewById(R.id.tvNote);
@@ -66,6 +57,10 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void afterStart() {
+        neueUtils = new Utils(this,newLoginUtils);
         neueUtils.start();
         neueUtils.getSpeed().observe(this, (value) -> {
             runOnUiThread(() -> {
@@ -73,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
                         tvRueckgabe.setText(String.format("%d km/h", value));
                         setLimitIcon(l_Limit);
                         setSpeedIcon(value,l_Limit);
-                        setHighscore(100,90);
+                        setHighscore();
                     }
             );
         });
@@ -101,9 +96,13 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void setHighscore(int high_highscore,int own_Highscore ) {
-        //
-        tvNote.setText(String.format("Highscore: %d \n Score: %d",high_highscore,own_Highscore));
+    public void setHighscore() {
+        tvNote.setText(String.format(
+                "1st: %s %d \n" + "2nd: %s %d \n" + "3rd: %s %d \n" + getString(R.string.score) + " %d",
+                newLoginUtils.getFirstName(),newLoginUtils.getFirstScore(),
+                newLoginUtils.getSecondName(),newLoginUtils.getSecondScore(),
+                newLoginUtils.getThirdName(),newLoginUtils.getThirdScore(),
+                newLoginUtils.getScore()));
     }
 
     public void setLimitIcon(int i_Limit) {
@@ -151,72 +150,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
-
-
-    final LoginUtils neueLoginUtils = new LoginUtils();
-
-    public void showSignUp() {
-        new Thread(() -> {
-        AlertDialog.Builder mBuilder = new AlertDialog.Builder(MainActivity.this);
-        View mView = getLayoutInflater().inflate(R.layout.dialog_login, null);
-        final EditText mName = mView.findViewById(R.id.edtName);
-        final EditText mPass = mView.findViewById(R.id.edtPass);
-        mBuilder.setPositiveButton(R.string.login, (dialog, id) -> {
-            if (!mName.getText().toString().isEmpty() && !mPass.getText().toString().isEmpty()) {
-                //Todo RODI richtige anmelden einbinden
-                String kek = mName.getText().toString();
-                String kek2 = mPass.getText().toString();
-
-
-
-
-                if (neueLoginUtils.anmelden(kek, kek2)) {
-                    Toast.makeText(MainActivity.this, getString(R.string.login_success), Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(MainActivity.this, getString(R.string.login_fail), Toast.LENGTH_SHORT).show();
-                }
-            } else {
-                Toast.makeText(MainActivity.this, getString(R.string.login_fail), Toast.LENGTH_SHORT).show();
-                showSignUp();
-            }
-        });
-        mBuilder.setNeutralButton(R.string.regist, (dialog, id) -> {
-            showRegistration();
-        });
-        mBuilder.setView(mView);
-        AlertDialog dialog = mBuilder.create();
-        dialog.show();
-        }).start();
-    }
-
-    private void showRegistration() {
-        AlertDialog.Builder mBuilder = new AlertDialog.Builder(MainActivity.this);
-        View mView = getLayoutInflater().inflate(R.layout.dialog_registration, null);
-        final EditText mName = mView.findViewById(R.id.edtName);
-        final EditText mPass = mView.findViewById(R.id.edtPass);
-        final EditText mPassConf = mView.findViewById(R.id.edtPassConf);
-
-        mBuilder.setPositiveButton(R.string.login, (dialog, id) -> {
-            if (!mName.getText().toString().isEmpty()
-                    && !mPass.getText().toString().isEmpty()
-                    && mPass.getText().toString().equals(mPassConf.getText().toString())) {
-                //Todo RODI richtige register einbinden
-                //if loginUtils.registrieren(mName.getText().toString(), mPass.getText().toString().isEmpty()) {
-                Toast.makeText(MainActivity.this, getString(R.string.regist_success), Toast.LENGTH_SHORT).show();
-                //} else {
-                //    Toast.makeText(MainActivity.this, getString(R.string.login_fail), Toast.LENGTH_SHORT).show();
-                //}
-            } else {
-                Toast.makeText(MainActivity.this, getString(R.string.registFailed), Toast.LENGTH_SHORT).show();
-                showRegistration();
-            }
-        });
-        mBuilder.setView(mView);
-        AlertDialog dialog = mBuilder.create();
-        dialog.show();
-    }
-
     private static void disableSSLCertificateChecking() {
         TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
             public X509Certificate[] getAcceptedIssuers() {
@@ -244,6 +177,64 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
+        }
+    }
+
+
+    @Override
+    public void onRegListenerClicked(DialogFragment dialog) {
+        final EditText l_Name = dialog.getDialog().findViewById(R.id.edtName);
+        final EditText l_Pass = dialog.getDialog().findViewById(R.id.edtPass);
+        final EditText l_PassConf = dialog.getDialog().findViewById(R.id.edtPassConf);
+
+        if (!l_Name.getText().toString().isEmpty()
+                    && !l_Pass.getText().toString().isEmpty()
+                    && l_Pass.getText().toString().equals(l_PassConf.getText().toString())) {
+            new Thread(() -> {
+                if (newLoginUtils.registrieren(l_Name.getText().toString(), l_Pass.getText().toString())) {
+                    runOnUiThread(() -> {
+                        Toast.makeText(MainActivity.this, getString(R.string.regist_success), Toast.LENGTH_SHORT).show();
+                        dialog.dismiss();
+                    });
+                } else {
+                    runOnUiThread(() -> {
+                        Toast.makeText(MainActivity.this, getString(R.string.regist_failed), Toast.LENGTH_SHORT).show();
+                    });
+                }
+            }).start();
+        } else {
+            Toast.makeText(MainActivity.this, getString(R.string.regist_failed), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onLoginRegisterListenerClicked(DialogFragment dialog) {
+        new RegistrationAlert().show(getSupportFragmentManager(),"Login Window");
+    }
+
+    @Override
+    public void onLoginListenerClicked(DialogFragment dialog) {
+
+        //final LoginUtils newLoginUtils = new LoginUtils();
+        final EditText l_Name = dialog.getDialog().findViewById(R.id.edtName);
+        final EditText l_Pass = dialog.getDialog().findViewById(R.id.edtPass);
+
+        if (!l_Name.getText().toString().isEmpty() && !l_Pass.getText().toString().isEmpty()) {
+            new Thread(() -> {
+                if (newLoginUtils.anmelden(l_Name.getText().toString(), l_Pass.getText().toString())) {
+                    runOnUiThread(() -> {
+                        Toast.makeText(MainActivity.this, getString(R.string.login_success), Toast.LENGTH_SHORT).show();
+                        dialog.dismiss();
+                        afterStart();
+                    });
+                } else {
+                    runOnUiThread(() -> {
+                        Toast.makeText(MainActivity.this, getString(R.string.login_failed), Toast.LENGTH_SHORT).show();
+                    });
+                }
+            }).start();
+        } else {
+                Toast.makeText(MainActivity.this, getString(R.string.login_failed), Toast.LENGTH_SHORT).show();
         }
     }
 }

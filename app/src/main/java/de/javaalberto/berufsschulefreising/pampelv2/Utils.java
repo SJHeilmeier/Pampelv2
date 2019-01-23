@@ -21,6 +21,7 @@ import static java.lang.Math.pow;
 
 public class Utils extends Thread{
     private Activity mActivity;
+    private LoginUtils mLoginUtils;
     private double currSpeed;
     private int currLimit;
     private Location currLocation;
@@ -32,8 +33,9 @@ public class Utils extends Thread{
 
     private MutableLiveData<Integer> m_speed;
 
-    public Utils(Activity activity) {
+    public Utils(Activity activity,LoginUtils i_LoginUtils) {
         this.mActivity = activity;
+        this.mLoginUtils = i_LoginUtils;
         gpsTracker = new GpsTracker(mActivity.getApplicationContext());
         enableGps();
         m_speed = new MutableLiveData<>();
@@ -46,6 +48,7 @@ public class Utils extends Thread{
     public void run() {
         int counter = 4;
         super.run();
+        mLoginUtils.handleScore(0,0);
         while (true) {
             try {
                 if (setCurrLocation()) {
@@ -154,6 +157,7 @@ public class Utils extends Thread{
                             }
                         }
                         counter = 0;
+                        mLoginUtils.handleScore((int) Math.floor(currSpeed * 3.6),currLimit);
                     }
                 }
             } catch (MalformedURLException e) {
