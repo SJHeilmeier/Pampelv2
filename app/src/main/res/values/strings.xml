@@ -3,8 +3,8 @@
     <string name="emoji">An emoji</string>
     <string name="limit">a Sign that shows the Limit</string>
     <string name="login">Login</string>
-    <string name="login_name" >name</string>
-    <string name="password_text">password</string>
+    <string name="login_name" >rodi</string>
+    <string name="password_text">12345</string>
     <string name="regist">Sign up</string>
     <string name="registTitle">Registration</string>
     <string name="passConf">confirm passwort</string>

@@ -33,7 +33,20 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        isAuthenticated = false;
+
+
+        /*final LoginUtils neueLoginUtils = new LoginUtils();
+
+        new Thread(() -> {
+            boolean resultLogin = neueLoginUtils.anmelden("rodi","12345");
+            boolean resultSignup = neueLoginUtils.registrieren("rodi","12345");
+            System.out.println("res: " + resultLogin + " name: " + neueLoginUtils.getName());
+            System.out.println("res: " + resultSignup + " name: " + neueLoginUtils.getName());
+        }).start();
+        */
+
+
+        isAuthenticated = true;
 
         if (!isAuthenticated) {
             showSignUp();
@@ -138,7 +151,13 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
+
+
+    final LoginUtils neueLoginUtils = new LoginUtils();
+
     public void showSignUp() {
+        new Thread(() -> {
         AlertDialog.Builder mBuilder = new AlertDialog.Builder(MainActivity.this);
         View mView = getLayoutInflater().inflate(R.layout.dialog_login, null);
         final EditText mName = mView.findViewById(R.id.edtName);
@@ -146,11 +165,17 @@ public class MainActivity extends AppCompatActivity {
         mBuilder.setPositiveButton(R.string.login, (dialog, id) -> {
             if (!mName.getText().toString().isEmpty() && !mPass.getText().toString().isEmpty()) {
                 //Todo RODI richtige anmelden einbinden
-                //if loginUtils.anmelden(mName.getText().toString(), mPass.getText().toString().isEmpty()) {
+                String kek = mName.getText().toString();
+                String kek2 = mPass.getText().toString();
+
+
+
+
+                if (neueLoginUtils.anmelden(kek, kek2)) {
                     Toast.makeText(MainActivity.this, getString(R.string.login_success), Toast.LENGTH_SHORT).show();
-                //} else {
-                //    Toast.makeText(MainActivity.this, getString(R.string.login_fail), Toast.LENGTH_SHORT).show();
-                //}
+                } else {
+                    Toast.makeText(MainActivity.this, getString(R.string.login_fail), Toast.LENGTH_SHORT).show();
+                }
             } else {
                 Toast.makeText(MainActivity.this, getString(R.string.login_fail), Toast.LENGTH_SHORT).show();
                 showSignUp();
@@ -162,6 +187,7 @@ public class MainActivity extends AppCompatActivity {
         mBuilder.setView(mView);
         AlertDialog dialog = mBuilder.create();
         dialog.show();
+        }).start();
     }
 
     private void showRegistration() {
