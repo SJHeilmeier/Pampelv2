@@ -2,7 +2,6 @@ package de.javaalberto.berufsschulefreising.pampelv2;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -30,7 +29,6 @@ public class LoginUtils {
                     name,
                     currSpeed,
                     currLimit
-
             );
 
             HttpURLConnection connScore = (HttpURLConnection) new URL(scoreUrl).openConnection();
@@ -50,36 +48,37 @@ public class LoginUtils {
 
             JSONObject jsonObjectScore = new JSONObject(sbScore.toString());
 
-            final String loginMessage = jsonObjectScore
-                    .getString("message");
+            final String loginMessage = jsonObjectScore.getString("message");
+            final String loginStatus = jsonObjectScore.getString("status");
 
-            final String loginStatus = jsonObjectScore
-                    .getString("status");
-
-            /*name = jsonObjectScore
-                    .getString("username");*/
-
-            score = jsonObjectScore
-                    .getInt("score");
+            score = jsonObjectScore.getInt("score");
 
             //erster Platz
             firstName = jsonObjectScore
-                    .getJSONObject("first").getString("username");
+                    .getJSONObject("first")
+                    .getString("username");
+
             firstScore = jsonObjectScore
-                    .getJSONObject("first").getInt("score");
+                    .getJSONObject("first")
+                    .getInt("score");
 
             //zweiter Platz
             secondName = jsonObjectScore
-                    .getJSONObject("second").getString("username");
+                    .getJSONObject("second")
+                    .getString("username");
+
             secondScore = jsonObjectScore
-                    .getJSONObject("second").getInt("score");
+                    .getJSONObject("second")
+                    .getInt("score");
 
             //dritter Platz
             thirdName = jsonObjectScore
-                    .getJSONObject("third").getString("username");
-            thirdScore = jsonObjectScore
-                    .getJSONObject("third").getInt("score");
+                    .getJSONObject("third")
+                    .getString("username");
 
+            thirdScore = jsonObjectScore
+                    .getJSONObject("third")
+                    .getInt("score");
 
             if (loginStatus.equals("true")) {
                 return score;
@@ -120,21 +119,11 @@ public class LoginUtils {
 
             JSONObject jsonObjectLogin = new JSONObject(sbLogin.toString());
 
-            final String loginMessage = jsonObjectLogin
-                    .getString("message");
-            System.out.println(loginMessage);
+            final String loginMessage = jsonObjectLogin.getString("message");
+            final String loginStatus = jsonObjectLogin.getString("status");
 
-            final String loginStatus = jsonObjectLogin
-                    .getString("status");
-            System.out.println(loginStatus);
-
-            name = jsonObjectLogin
-                    .getString("username");
-            System.out.println(name);
-
-            id = jsonObjectLogin
-                    .getInt("id");
-            System.out.println(id);
+            name = jsonObjectLogin.getString("username");
+            id = jsonObjectLogin.getInt("id");
 
             if (loginStatus.equals("true")) {
                 return true;
@@ -176,21 +165,11 @@ public class LoginUtils {
 
             JSONObject jsonObjectLogin = new JSONObject(sbLogin.toString());
 
-            final String loginMessage = jsonObjectLogin
-                    .getString("message");
-            System.out.println(loginMessage);
+            final String loginMessage = jsonObjectLogin.getString("message");
+            final String loginStatus = jsonObjectLogin.getString("status");
 
-            final String loginStatus = jsonObjectLogin
-                    .getString("status");
-            System.out.println(loginStatus);
-
-            name = jsonObjectLogin
-                    .getString("username");
-            System.out.println(name);
-
-            id = jsonObjectLogin
-                    .getInt("id");
-            System.out.println(id);
+            name = jsonObjectLogin.getString("username");
+            id = jsonObjectLogin.getInt("id");
 
             if (loginStatus.equals("true")) {
                 return true;
@@ -229,11 +208,7 @@ public class LoginUtils {
         return firstScore;
     }
 
-    public Integer getSecondScore() {
-        return secondScore;
-    }
+    public Integer getSecondScore() { return secondScore; }
 
-    public Integer getThirdScore() {
-        return thirdScore;
-    }
+    public Integer getThirdScore() { return thirdScore; }
 }
