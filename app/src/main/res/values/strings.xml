@@ -13,4 +13,8 @@
     <string name="regist_failed">registration failed</string>
     <string name="regist_success">registration successfull</string>
     <string name="score">Your Score</string>
+    <string name="saved_Authentication">AuthZwei</string>
+    <string name="saved_Name">Name</string>
+    <string name="saved_Password">Pass</string>
+    <string name="saved_Login">Auth</string>
 </resources>

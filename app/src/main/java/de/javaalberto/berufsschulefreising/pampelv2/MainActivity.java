@@ -1,10 +1,15 @@
 package de.javaalberto.berufsschulefreising.pampelv2;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -25,6 +30,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.widget.Toast;
 
+import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
+
 public class MainActivity extends AppCompatActivity implements LoginAlert.LoginAlertListener, RegistrationAlert.RegAlertListener {
 
     private TextView tvRueckgabe,tvLimit,tvNote;
@@ -33,6 +40,13 @@ public class MainActivity extends AppCompatActivity implements LoginAlert.LoginA
     private LoginUtils newLoginUtils;
     private Utils neueUtils;
     private SharedPreferences sharedPref;
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu,menu);
+        return true;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -168,6 +182,21 @@ public class MainActivity extends AppCompatActivity implements LoginAlert.LoginA
         }
     }
 
+    private void logout(){
+        runOnUiThread(() ->{
+            //Speichert Name und Passwort
+            //--------------------------------------------------------------------------
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putBoolean(getString(R.string.saved_Login), false);
+            editor.putString(getString(R.string.saved_Name), "");
+            editor.putString(getString(R.string.saved_Password), "");
+            editor.commit();
+            //--------------------------------------------------------------------------
+            Toast.makeText(MainActivity.this, "Logout", Toast.LENGTH_SHORT).show();
+        });
+        this.recreate();
+    }
+
     private static void disableSSLCertificateChecking() {
         TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
             public X509Certificate[] getAcceptedIssuers() {
@@ -223,6 +252,16 @@ public class MainActivity extends AppCompatActivity implements LoginAlert.LoginA
         } else {
             Toast.makeText(MainActivity.this, getString(R.string.regist_failed), Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.itemLogout: {
+                logout();
+            }
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
