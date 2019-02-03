@@ -1,5 +1,7 @@
 package de.javaalberto.berufsschulefreising.pampelv2;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -30,19 +32,35 @@ public class MainActivity extends AppCompatActivity implements LoginAlert.LoginA
     private boolean isAuthenticated;
     private LoginUtils newLoginUtils;
     private Utils neueUtils;
+    private SharedPreferences sharedPref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        isAuthenticated = false;
+        sharedPref = this.getPreferences(this.getApplicationContext().MODE_PRIVATE);
+        isAuthenticated = sharedPref.getBoolean(getString(R.string.saved_Login), false);
+        newLoginUtils = new LoginUtils();
 
         if (!isAuthenticated) {
             new LoginAlert().show(getSupportFragmentManager(),"Login Window");
+        } else if (isAuthenticated){
+            new Thread(() -> {
+                if (newLoginUtils.anmelden(sharedPref.getString(getString(R.string.saved_Name), ""), sharedPref.getString(getString(R.string.saved_Password), ""))) {
+                    runOnUiThread(() -> {
+                        Toast.makeText(MainActivity.this, getString(R.string.login_success), Toast.LENGTH_SHORT).show();
+                        afterStart();
+                    });
+                } else {
+                    runOnUiThread(() -> {
+                        Toast.makeText(MainActivity.this, getString(R.string.login_failed), Toast.LENGTH_SHORT).show();
+                        new LoginAlert().show(getSupportFragmentManager(),"Login Window");
+                    });
+                }
+            }).start();
         }
 
-        newLoginUtils = new LoginUtils();
+
 
         tvRueckgabe = findViewById(R.id.tvRueckgabe);
         tvLimit = findViewById(R.id.tvLimit);
@@ -122,7 +140,7 @@ public class MainActivity extends AppCompatActivity implements LoginAlert.LoginA
 
     public void setSpeedIcon(int i_Speed,int i_Limit) {
 
-        if (i_Speed == 0) {
+        if (i_Speed < 3) {
             tvLimit.setVisibility(View.INVISIBLE);
             tvRueckgabe.setVisibility(View.INVISIBLE);
             tvNote.setVisibility(View.VISIBLE);
@@ -132,7 +150,7 @@ public class MainActivity extends AppCompatActivity implements LoginAlert.LoginA
             tvNote.setVisibility(View.INVISIBLE);
         }
 
-        if ((i_Speed != 69) && (i_Speed != 0) ){
+        if ((i_Speed != 69) && (i_Speed > 3) ){
             int l_istToFast = isToFast(i_Speed, i_Limit);
             if (l_istToFast == 100) {
                 ivSmiley.setImageResource(R.drawable.smileybad);
@@ -141,7 +159,7 @@ public class MainActivity extends AppCompatActivity implements LoginAlert.LoginA
             } else if (l_istToFast == 0) {
                 ivSmiley.setImageResource(R.drawable.smileyhappy);
             }
-        } else if (i_Speed == 0) {
+        } else if (i_Speed < 3) {
             ivSmiley.setImageResource(R.drawable.smileysleepy);
         } else if (i_Speed == 69) {
             ivSmiley.setImageResource(R.drawable.smileywink);
@@ -223,6 +241,16 @@ public class MainActivity extends AppCompatActivity implements LoginAlert.LoginA
             new Thread(() -> {
                 if (newLoginUtils.anmelden(l_Name.getText().toString(), l_Pass.getText().toString())) {
                     runOnUiThread(() -> {
+
+                        //Speichert Name und Passwort
+                        //--------------------------------------------------------------------------
+                        SharedPreferences.Editor editor = sharedPref.edit();
+                        editor.putBoolean(getString(R.string.saved_Login), true);
+                        editor.putString(getString(R.string.saved_Name), l_Name.getText().toString());
+                        editor.putString(getString(R.string.saved_Password), l_Pass.getText().toString());
+                        editor.commit();
+                        //--------------------------------------------------------------------------
+
                         Toast.makeText(MainActivity.this, getString(R.string.login_success), Toast.LENGTH_SHORT).show();
                         dialog.dismiss();
                         afterStart();
